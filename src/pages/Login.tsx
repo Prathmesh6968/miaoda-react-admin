@@ -214,18 +214,6 @@ export default function Login() {
             )}
           </div>
 
-          <div className="mt-4 pt-4 border-t">
-            <p className="text-xs text-center text-muted-foreground">
-              Admin?{' '}
-              <Button
-                variant="link"
-                className="p-0 h-auto"
-                onClick={() => navigate('/admin-login')}
-              >
-                Sign in to admin panel
-              </Button>
-            </p>
-          </div>
         </CardContent>
       </Card>
     </div>
