@@ -12,12 +12,14 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
+import { useAdminAuth } from '@/hooks/use-admin-auth';
 import { animeApi, episodeApi, profileApi } from '@/db/api';
 import type { Anime, Episode, Profile } from '@/types';
-import { Plus, Edit, Trash2, Shield } from 'lucide-react';
+import { Plus, Edit, Trash2, Shield, LogOut } from 'lucide-react';
 
 export default function Admin() {
   const { user, profile } = useAuth();
+  const { isAuthenticated: isAdminAuth, logout: adminLogout } = useAdminAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -53,11 +55,13 @@ export default function Admin() {
   });
 
   useEffect(() => {
-    if (!user || profile?.role !== 'admin') {
-      navigate('/');
+    // Check if user is logged in as admin
+    const adminAuth = localStorage.getItem('adminAuth');
+    if (!adminAuth && (!user || profile?.role !== 'admin')) {
+      navigate('/admin-login');
       toast({
         title: 'Access Denied',
-        description: 'You do not have permission to access this page',
+        description: 'You must be logged in as admin to access this page',
         variant: 'destructive'
       });
       return;
@@ -65,6 +69,16 @@ export default function Admin() {
 
     loadData();
   }, [user, profile]);
+
+  const handleLogout = () => {
+    adminLogout();
+    localStorage.removeItem('adminAuth');
+    navigate('/admin-login');
+    toast({
+      title: 'Logged Out',
+      description: 'You have been logged out successfully'
+    });
+  };
 
   const loadData = async () => {
     try {
@@ -219,9 +233,19 @@ export default function Admin() {
   return (
     <div className="min-h-screen py-8 px-4">
       <div className="container mx-auto">
-        <div className="flex items-center gap-3 mb-8">
-          <Shield className="w-8 h-8 text-accent" />
-          <h1 className="text-4xl font-bold">Admin Dashboard</h1>
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-3">
+            <Shield className="w-8 h-8 text-accent" />
+            <h1 className="text-4xl font-bold">Admin Dashboard</h1>
+          </div>
+          <Button
+            onClick={handleLogout}
+            variant="destructive"
+            size="sm"
+          >
+            <LogOut className="w-4 h-4 mr-2" />
+            Logout
+          </Button>
         </div>
 
         <Tabs defaultValue="anime" className="space-y-6">
