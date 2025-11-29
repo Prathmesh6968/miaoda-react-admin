@@ -24,6 +24,7 @@ export default function Admin() {
   const { toast } = useToast();
 
   const [anime, setAnime] = useState<Anime[]>([]);
+  const [episodes, setEpisodes] = useState<Episode[]>([]);
   const [users, setUsers] = useState<Profile[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [episodeDialogOpen, setEpisodeDialogOpen] = useState(false);
@@ -67,8 +68,9 @@ export default function Admin() {
       return;
     }
 
+    // Load all data immediately on startup
     loadData();
-  }, [user, profile]);
+  }, []);
 
   const handleLogout = () => {
     adminLogout();
@@ -88,8 +90,20 @@ export default function Admin() {
       ]);
       setAnime(animeData);
       setUsers(usersData);
+      
+      // Load all episodes
+      const allEpisodes: Episode[] = [];
+      for (const anime of animeData) {
+        const episodeList = await episodeApi.getByAnimeId(anime.id);
+        allEpisodes.push(...episodeList);
+      }
+      setEpisodes(allEpisodes);
     } catch (error) {
       console.error('Error loading data:', error);
+      toast({
+        title: 'Warning',
+        description: 'Could not load all data, but admin panel is ready'
+      });
     }
   };
 
