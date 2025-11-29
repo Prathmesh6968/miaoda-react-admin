@@ -5,7 +5,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/db/supabase';
 import { Mail, Lock } from 'lucide-react';
 
 export default function Login() {
@@ -34,49 +33,56 @@ export default function Login() {
 
     try {
       if (isSignUp) {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            redirectTo: window.location.origin
-          }
-        });
-
-        if (error) {
+        // Create account - store in localStorage
+        const existingUsers = JSON.parse(localStorage.getItem('users') || '[]');
+        
+        if (existingUsers.some((u: any) => u.email === email)) {
           toast({
-            title: 'Sign Up Failed',
-            description: error.message,
+            title: 'Error',
+            description: 'This email is already registered',
             variant: 'destructive'
           });
-        } else {
-          toast({
-            title: 'Success',
-            description: 'Check your email to confirm your account'
-          });
-          setIsSignUp(false);
-          setEmail('');
-          setPassword('');
+          setLoading(false);
+          return;
         }
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password
-        });
 
-        if (error) {
+        existingUsers.push({ email, password, id: Date.now().toString() });
+        localStorage.setItem('users', JSON.stringify(existingUsers));
+        localStorage.setItem('userAuth', JSON.stringify({ email, id: existingUsers[existingUsers.length - 1].id }));
+
+        toast({
+          title: 'Success',
+          description: 'Account created successfully!'
+        });
+        
+        navigate(from);
+      } else {
+        // Login - check localStorage
+        const existingUsers = JSON.parse(localStorage.getItem('users') || '[]');
+        const user = existingUsers.find((u: any) => u.email === email && u.password === password);
+
+        if (!user) {
           toast({
             title: 'Login Failed',
-            description: error.message,
+            description: 'Invalid email or password',
             variant: 'destructive'
           });
-        } else {
-          toast({
-            title: 'Success',
-            description: 'Logged in successfully!'
-          });
-          navigate(from);
+          setLoading(false);
+          return;
         }
+
+        localStorage.setItem('userAuth', JSON.stringify({ email, id: user.id }));
+
+        toast({
+          title: 'Success',
+          description: 'Logged in successfully!'
+        });
+
+        navigate(from);
       }
+      
+      setEmail('');
+      setPassword('');
     } catch (error) {
       console.error('Auth error:', error);
       toast({
