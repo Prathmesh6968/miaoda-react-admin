@@ -13,7 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 import { useAdminAuth } from '@/hooks/use-admin-auth';
-import { animeApi, episodeApi, profileApi } from '@/db/api-mongo';
+import { animeApi, episodeApi, profileApi } from '@/db/api';
 import type { Anime, Episode, Profile } from '@/types';
 import { Plus, Edit, Trash2, Shield, LogOut } from 'lucide-react';
 
