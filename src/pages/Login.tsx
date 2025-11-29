@@ -10,6 +10,7 @@ import { Mail, Lock } from 'lucide-react';
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
   const navigate = useNavigate();
@@ -33,6 +34,17 @@ export default function Login() {
 
     try {
       if (isSignUp) {
+        // Validate confirm password
+        if (password !== confirmPassword) {
+          toast({
+            title: 'Error',
+            description: 'Passwords do not match',
+            variant: 'destructive'
+          });
+          setLoading(false);
+          return;
+        }
+
         // Create account - store in localStorage
         const existingUsers = JSON.parse(localStorage.getItem('users') || '[]');
         
@@ -83,6 +95,7 @@ export default function Login() {
       
       setEmail('');
       setPassword('');
+      setConfirmPassword('');
     } catch (error) {
       console.error('Auth error:', error);
       toast({
@@ -140,6 +153,24 @@ export default function Login() {
               </div>
             </div>
 
+            {isSignUp && (
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-3 w-5 h-5 text-muted-foreground" />
+                  <Input
+                    id="confirmPassword"
+                    type="password"
+                    placeholder="Confirm your password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="pl-10"
+                    disabled={loading}
+                  />
+                </div>
+              </div>
+            )}
+
             <Button
               type="submit"
               disabled={loading}
@@ -150,17 +181,37 @@ export default function Login() {
             </Button>
           </form>
 
-          <div className="mt-4 text-center">
+          <div className="mt-4 text-center space-y-2">
             <p className="text-sm text-muted-foreground">
               {isSignUp ? 'Already have an account?' : "Don't have an account?"}
               <Button
                 variant="link"
                 className="ml-1 p-0 h-auto"
-                onClick={() => setIsSignUp(!isSignUp)}
+                onClick={() => {
+                  setIsSignUp(!isSignUp);
+                  setConfirmPassword('');
+                }}
               >
                 {isSignUp ? 'Sign In' : 'Create Account'}
               </Button>
             </p>
+            
+            {!isSignUp && (
+              <p className="text-sm text-muted-foreground">
+                <Button
+                  variant="link"
+                  className="p-0 h-auto"
+                  onClick={() => {
+                    toast({
+                      title: 'Reset Password',
+                      description: 'Please contact admin for password reset'
+                    });
+                  }}
+                >
+                  Forgot Password?
+                </Button>
+              </p>
+            )}
           </div>
 
           <div className="mt-4 pt-4 border-t">
