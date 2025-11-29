@@ -8,20 +8,20 @@ import { useToast } from '@/hooks/use-toast';
 import { Mail, Lock } from 'lucide-react';
 
 export default function AdminLogin() {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
   // Hardcoded admin credentials
-  const ADMIN_USERNAME = 'Prathmesh';
+  const ADMIN_USERNAME = 'prathmesh';
   const ADMIN_PASSWORD = 'Parthislive';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!email || !password) {
+    if (!username || !password) {
       toast({
         title: 'Error',
         description: 'Please fill in all fields',
@@ -34,10 +34,10 @@ export default function AdminLogin() {
 
     try {
       // Login logic
-      if (email.toLowerCase() !== ADMIN_USERNAME.toLowerCase()) {
+      if (username.toLowerCase() !== ADMIN_USERNAME.toLowerCase()) {
         toast({
           title: 'Access Denied',
-          description: 'Invalid email or password',
+          description: 'Invalid username or password',
           variant: 'destructive'
         });
         setLoading(false);
@@ -47,7 +47,7 @@ export default function AdminLogin() {
       if (password !== ADMIN_PASSWORD) {
         toast({
           title: 'Access Denied',
-          description: 'Invalid email or password',
+          description: 'Invalid username or password',
           variant: 'destructive'
         });
         setLoading(false);
@@ -56,7 +56,7 @@ export default function AdminLogin() {
 
       // Store admin session
       localStorage.setItem('adminAuth', JSON.stringify({
-        email,
+        username,
         timestamp: new Date().toISOString()
       }));
 
@@ -92,15 +92,15 @@ export default function AdminLogin() {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="username">Username</Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-3 w-5 h-5 text-muted-foreground" />
                 <Input
-                  id="email"
-                  type="email"
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  id="username"
+                  type="text"
+                  placeholder="Enter your username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   className="pl-10"
                   disabled={loading}
                 />
