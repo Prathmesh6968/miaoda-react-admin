@@ -12,7 +12,7 @@ const App = () => {
       <AuthProvider>
         <ScrollToTop />
         <Toaster />
-        <RequireAuth whiteList={['/login', '/admin-login', '/', '/browse', '/anime/*', '/watch/*']}>
+        <RequireAuth whiteList={['/login', '/admin-login', '/admin', '/', '/browse', '/anime/*', '/watch/*']}>
           <div className="flex flex-col min-h-screen">
             <Header />
             <main className="flex-grow">
