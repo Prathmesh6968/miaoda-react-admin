@@ -10,8 +10,14 @@ app.use(cors());
 app.use(express.json());
 
 // MongoDB Connection
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.net/anime-db?retryWrites=true&w=majority';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://prathmeshcoder69_db_user:Parthislive@cluster0.okaazwr.mongodb.net/anime-db?retryWrites=true&w=majority';
 
+if (!MONGODB_URI) {
+  console.error('❌ MONGODB_URI environment variable not set');
+  process.exit(1);
+}
+
+console.log('🔗 Connecting to MongoDB...');
 mongoose.connect(MONGODB_URI)
   .then(() => console.log('✓ MongoDB connected'))
   .catch(err => console.error('MongoDB error:', err));
