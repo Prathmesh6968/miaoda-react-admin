@@ -11,7 +11,6 @@ export default function AdminLogin() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [isSignUp, setIsSignUp] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -34,75 +33,39 @@ export default function AdminLogin() {
     setLoading(true);
 
     try {
-      if (isSignUp) {
-        // For sign up, we check if the email matches admin username format
-        if (email.toLowerCase() !== ADMIN_USERNAME.toLowerCase()) {
-          toast({
-            title: 'Access Denied',
-            description: 'Invalid admin email',
-            variant: 'destructive'
-          });
-          setLoading(false);
-          return;
-        }
-
-        if (password !== ADMIN_PASSWORD) {
-          toast({
-            title: 'Access Denied',
-            description: 'Invalid password',
-            variant: 'destructive'
-          });
-          setLoading(false);
-          return;
-        }
-
-        // Store admin session
-        localStorage.setItem('adminAuth', JSON.stringify({
-          email,
-          timestamp: new Date().toISOString()
-        }));
-
+      // Login logic
+      if (email.toLowerCase() !== ADMIN_USERNAME.toLowerCase()) {
         toast({
-          title: 'Success',
-          description: 'Admin account created successfully!'
+          title: 'Access Denied',
+          description: 'Invalid email or password',
+          variant: 'destructive'
         });
-        
-        navigate('/admin');
-      } else {
-        // Login logic
-        if (email.toLowerCase() !== ADMIN_USERNAME.toLowerCase()) {
-          toast({
-            title: 'Access Denied',
-            description: 'Invalid email or password',
-            variant: 'destructive'
-          });
-          setLoading(false);
-          return;
-        }
-
-        if (password !== ADMIN_PASSWORD) {
-          toast({
-            title: 'Access Denied',
-            description: 'Invalid email or password',
-            variant: 'destructive'
-          });
-          setLoading(false);
-          return;
-        }
-
-        // Store admin session
-        localStorage.setItem('adminAuth', JSON.stringify({
-          email,
-          timestamp: new Date().toISOString()
-        }));
-
-        toast({
-          title: 'Success',
-          description: 'Logged in successfully!'
-        });
-
-        navigate('/admin');
+        setLoading(false);
+        return;
       }
+
+      if (password !== ADMIN_PASSWORD) {
+        toast({
+          title: 'Access Denied',
+          description: 'Invalid email or password',
+          variant: 'destructive'
+        });
+        setLoading(false);
+        return;
+      }
+
+      // Store admin session
+      localStorage.setItem('adminAuth', JSON.stringify({
+        email,
+        timestamp: new Date().toISOString()
+      }));
+
+      toast({
+        title: 'Success',
+        description: 'Logged in successfully!'
+      });
+
+      navigate('/admin');
     } catch (error) {
       console.error('Auth error:', error);
       toast({
@@ -123,7 +86,7 @@ export default function AdminLogin() {
             Admin Panel
           </CardTitle>
           <CardDescription>
-            {isSignUp ? 'Create your admin account' : 'Sign in to admin dashboard'}
+            Sign in to admin dashboard
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -166,26 +129,10 @@ export default function AdminLogin() {
               className="w-full"
               size="lg"
             >
-              {loading ? 'Processing...' : isSignUp ? 'Create Account' : 'Sign In'}
+              {loading ? 'Processing...' : 'Sign In'}
             </Button>
           </form>
 
-          <div className="mt-4 text-center">
-            <p className="text-sm text-muted-foreground">
-              {isSignUp ? 'Already have an account?' : "Don't have an account?"}
-              <Button
-                variant="link"
-                className="ml-1 p-0 h-auto"
-                onClick={() => setIsSignUp(!isSignUp)}
-              >
-                {isSignUp ? 'Sign In' : 'Create Account'}
-              </Button>
-            </p>
-          </div>
-
-          <p className="text-xs text-center text-muted-foreground mt-4">
-            Default credentials: Email: Prathmesh | Password: Parthislive
-          </p>
         </CardContent>
       </Card>
     </div>
